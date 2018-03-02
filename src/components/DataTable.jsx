@@ -8,7 +8,7 @@ import _isArray from 'lodash/isArray';
 import _compact from 'lodash/compact';
 import React, {Component} from 'react';
 import {Alert, ButtonToolbar, DropdownButton, MenuItem, Image} from 'react-bootstrap';
-import Paginator from 'react-laravel-paginator';
+import Paginator from './Paginator';
 import moment from '../utils/moment';
 import numeral from '../utils/numeral';
 
@@ -145,16 +145,21 @@ export default class DataTable extends Component {
       const filterBy = _get(col, 'filterBy', false);
       if (filterBy !== false) {
         return (
-          <th key={key} width={_get(col, 'width', 'auto')} colSpan={_get(col, 'colSpan', '1')}>
+          <th key={key}
+            width={_get(col, 'width', 'auto')}
+            colSpan={_get(col, 'colSpan', '1')}>
             <ButtonToolbar>
-              <DropdownButton bsStyle="link" title={title()} id={'dropdown-size-extra-small' + key}>
+              <DropdownButton bsStyle="link"
+                title={title()}
+                id={'dropdown-size-extra-small' + key}>
                 {_map(_get(col, 'filterBy', []), (item, itemKey) => {
                   return (
-                    <MenuItem key={itemKey}
-                              eventKey={itemKey}
-                              onSelect={() => {
-                                filter(item.value);
-                              }}>
+                    <MenuItem
+                      key={itemKey}
+                      eventKey={itemKey}
+                      onSelect={() => {
+                        filter(item.value);
+                      }}>
                       {item.desc}
                     </MenuItem>
                   );
@@ -176,11 +181,17 @@ export default class DataTable extends Component {
       const order = _get(col, 'order', false);
       if (order === true) {
         return (
-          <th key={key} width={_get(col, 'width', 'auto')} colSpan={_get(col, 'colSpan', '1')}>
+          <th key={key}
+            width={_get(col, 'width', 'auto')}
+            colSpan={_get(col, 'colSpan', '1')}>
             <ButtonToolbar>
-              <DropdownButton bsStyle="link" title={title()} id={'dropdown-size-extra-small' + key}>
-                <MenuItem eventKey="1" onSelect={select1}>A ... Z</MenuItem>
-                <MenuItem eventKey="2" onSelect={select2}>Z ... A</MenuItem>
+              <DropdownButton bsStyle="link"
+                title={title()}
+                id={'dropdown-size-extra-small' + key}>
+                <MenuItem eventKey="1"
+                  onSelect={select1}>A ... Z</MenuItem>
+                <MenuItem eventKey="2"
+                  onSelect={select2}>Z ... A</MenuItem>
               </DropdownButton>
             </ButtonToolbar>
           </th>
@@ -188,7 +199,9 @@ export default class DataTable extends Component {
       }
 
       return (
-        <th key={key} width={_get(col, 'width', 'auto')} colSpan={_get(col, 'colSpan', '1')}>
+        <th key={key}
+          width={_get(col, 'width', 'auto')}
+          colSpan={_get(col, 'colSpan', '1')}>
           {_get(col, 'name', '')}
         </th>
       );
@@ -207,7 +220,8 @@ export default class DataTable extends Component {
     if (_has(this.props, 'rows')) {
       return _map(this.props.rows, (row, keyRow) => {
         return (
-          <tr key={`${key}-${keyRow}`} className={`data-table-row${keyRow}`}>
+          <tr key={`${key}-${keyRow}`}
+            className={`data-table-row${keyRow}`}>
             {this.renderRecordCols(row.cols, record)}
           </tr>
         );
@@ -224,7 +238,9 @@ export default class DataTable extends Component {
   renderRecordCols(cols, record) {
     return _map(cols, (col, key) => {
       const value = this.getValue(record, col, key);
-      return (<td key={key} colSpan={_get(col, 'colSpan', '1')} className={_get(col, 'className', '')}>{value}</td>);
+      return (<td key={key}
+        colSpan={_get(col, 'colSpan', '1')}
+        className={_get(col, 'className', '')}>{value}</td>);
     });
   }
 
@@ -246,16 +262,20 @@ export default class DataTable extends Component {
     }
     if (_has(col, 'image')) {
       if (_has(record, col.image)) {
-        cell.push(<Image key="image" src={`/image/small/${_get(record, col.image)}`} responsive thumbnail />);
+        cell.push(<Image key="image"
+          src={`/image/small/${_get(record, col.image)}`}
+          responsive
+          thumbnail />);
       }
     }
 
     if (_has(col, 'text')) {
-      cell.push(<span key="text" className="data-table-static-text">{col.text}</span>);
+      cell.push(<span key="text"
+        className="data-table-static-text">{col.text}</span>);
     }
 
     if (_has(col, 'edit')) {
-      cell.push(
+      cell.push((
         <button
           className="btn btn-link"
           key="link"
@@ -263,17 +283,18 @@ export default class DataTable extends Component {
             this.props.edit(record);
           }}>
           {_get(record, col.show, '')}
-        </button>
-      );
+        </button>));
 
     } else if (_has(col, 'link') && _has(col, 'onClick')) {
       const click = (event) => {
         event.preventDefault();
         col.onClick(record, this.props.auth, this.context.router);
       };
-      cell.push(
-        <button className="btn btn-link" key="link" onClick={click}>{_get(col, 'link')}</button>
-      );
+      cell.push((
+        <button className="btn btn-link"
+          key="link"
+          onClick={click}>{_get(col, 'link')}</button>
+      ));
     }
 
     if (_has(col, 'array') && _has(col, 'arrayShow') && _has(col, 'onClick')) {
@@ -289,11 +310,11 @@ export default class DataTable extends Component {
         }
 
         cell.push(<button type="button"
-                          key={key2}
-                          className="btn btn-link"
-                          onClick={() => {
-                            col.onClick(item);
-                          }}>
+          key={key2}
+          className="btn btn-link"
+          onClick={() => {
+            col.onClick(item);
+          }}>
           {show}
         </button>);
       });
@@ -310,9 +331,10 @@ export default class DataTable extends Component {
           col.onClick(record);
         };
 
-        cell.push(
-          <button className="btn btn-link" key="showClick" onClick={click}>{_get(record, col.show, '')}</button>
-        );
+        cell.push(<button
+          className="btn btn-link"
+          key="showClick"
+          onClick={click}>{_get(record, col.show, '')}</button>);
       }
     }
 
@@ -345,11 +367,14 @@ export default class DataTable extends Component {
 
     if (_has(col, 'dropdownButton')) {
       const dropDownItems = this.renderDropDownItems(_get(col, 'dropdownButton'), record);
-      cell.push(
-        <DropdownButton key="dbbutton" bsStyle="default" bsSize="xsmall" title={col.name} id={'dropDown' + key}>
-          {dropDownItems}
-        </DropdownButton>
-      );
+      cell.push(<DropdownButton
+        key="dbbutton"
+        bsStyle="default"
+        bsSize="xsmall"
+        title={col.name}
+        id={'dropDown' + key}>
+        {dropDownItems}
+      </DropdownButton>);
     }
 
     return cell;
@@ -364,16 +389,21 @@ export default class DataTable extends Component {
       };
 
       if (_has(button, 'divider')) {
-        return <MenuItem key={key} divider />;
+        return <MenuItem key={key}
+          divider />;
       }
 
-      return <MenuItem key={key} eventKey={key} onSelect={click}>{button.name}</MenuItem>;
+      return <MenuItem key={key}
+        eventKey={key}
+        onSelect={click}>{button.name}</MenuItem>;
     });
   }
 
   renderPaginator() {
     const {paginator: {currPage, lastPage, onChange}} = this.props;
-    return <Paginator currPage={currPage} lastPage={lastPage} onChange={onChange} />;
+    return <Paginator currPage={currPage}
+      lastPage={lastPage}
+      onChange={onChange} />;
   }
 
   render() {

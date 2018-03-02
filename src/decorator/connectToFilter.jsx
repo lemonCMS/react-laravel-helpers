@@ -4,7 +4,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import classNames from 'classnames';
 import Qs from 'qs';
-import {storeState} from '../redux/modules/routesState';
+import {storeState} from '../redux/routeState/actions';
 
 let myTimeout = null;
 
@@ -30,7 +30,6 @@ export default function connectToFilter(rest) {
       }
     }
   }
-
 
   return (WrappedComponent) => {
     @connect(state => ({
@@ -109,7 +108,7 @@ export default function connectToFilter(rest) {
       }
 
       inputOnStack(key: string) {
-        return (this.state.form[key] ? this.state.form[key] : '' );
+        return (this.state.form[key] ? this.state.form[key] : '');
       }
 
       sortOnStack(field) {
@@ -254,21 +253,23 @@ export default function connectToFilter(rest) {
       alphaFilter(name, key, item, stack) {
         if (stack === item) {
           return (
-            <button key={key}
-                    className={classNames({'btn': true, 'btn-link': true, 'filter-size-box': true, 'active': stack === item})}
-                    onClick={() => {
-                      this.removeFromState(name, item);
-                    }}>
+            <button
+              key={key}
+              className={classNames({'btn': true, 'btn-link': true, 'filter-size-box': true, 'active': stack === item})}
+              onClick={() => {
+                this.removeFromState(name, item);
+              }}>
               {item}
             </button>);
         }
 
         return (
-          <button key={key}
-                  className={classNames({'btn': true, 'btn-link': true, 'filter-size-box': true, 'active': stack === item})}
-                  onClick={() => {
-                    this.pushOnState(name, item);
-                  }}>
+          <button
+            key={key}
+            className={classNames({'btn': true, 'btn-link': true, 'filter-size-box': true, 'active': stack === item})}
+            onClick={() => {
+              this.pushOnState(name, item);
+            }}>
             {item}
           </button>
         );

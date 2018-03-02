@@ -1,6 +1,8 @@
 import moment from 'moment';
 
-moment.locale('nl');
-const mango = moment;
-export default mango;
+export const setLocale = (locale = 'en') => {
+  moment.locale(locale);
+  return moment;
+};
 
+export default moment;
