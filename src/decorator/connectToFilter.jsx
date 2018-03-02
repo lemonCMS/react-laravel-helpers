@@ -9,20 +9,14 @@ import {storeState} from '../redux/routeState/actions';
 let myTimeout = null;
 
 export function createAllParamsForFetch(state) {
-  const pathname = state.routing.locationBeforeTransitions.pathname;
-  const params = _.assign(
-    _.get(state, ['routesState', 'routes', pathname], {}),
-    Qs.parse(_.get(state, ['routing', 'locationBeforeTransitions', 'search'], {}).substr(1))
-  );
+  const {routing: {location: {pathname}}} = state;
+  const params = _.assign(_.get(state, ['routesState', 'routes', pathname, 'form'], {}), Qs.parse(_.get(state, ['routing', 'location', 'search'], '').substr(1)));
 
-  return _.omit(params, (value) => {
-    return !value;
-  });
+  return _.omit(params, value => !value);
 }
 
 export default function connectToFilter(rest) {
   let path = null;
-
   if (rest !== 'undefined') {
     if (typeof rest === 'object') {
       if (rest.path !== 'undefined') {
@@ -33,17 +27,17 @@ export default function connectToFilter(rest) {
 
   return (WrappedComponent) => {
     @connect(state => ({
-      'routing': state.routing,
-      'routesState': state.routesState
+      routing: state.routing,
+      routesState: state.routesState
     }))
     class StateConnection extends Component {
       static propTypes = {
-        'routing': PropTypes.object,
-        'dispatch': PropTypes.func
+        routing: PropTypes.object,
+        dispatch: PropTypes.func
       };
 
       static contextTypes = {
-        'router': PropTypes.object
+        router: PropTypes.object
       };
 
       constructor() {
@@ -64,15 +58,12 @@ export default function connectToFilter(rest) {
         this.reset = this.reset.bind(this);
         this.state = {
           form: {},
-          mount: {},
-          skip: true
+          mount: {}
         };
       }
 
       stringifyFullState(state) {
-        return Qs.stringify(_.omit(state, (value) => {
-          return !value;
-        }), {encode: false});
+        return Qs.stringify(_.omit(state, value => !value), {encode: false});
       }
 
       componentWillMount() {
@@ -81,14 +72,13 @@ export default function connectToFilter(rest) {
       }
 
       componentWillReceiveProps(nextProps) {
-        if (this.props.routing.locationBeforeTransitions.pathname === nextProps.routing.locationBeforeTransitions.pathname) {
-          if (!_.isEqual(this.state, nextProps.routing.locationBeforeTransitions.state)) {
-            if (_.isObject(nextProps.routing.locationBeforeTransitions.state)) {
-              this.props.dispatch(storeState(nextProps.routing.locationBeforeTransitions.pathname, nextProps.routing.locationBeforeTransitions.state));
-              this.setState(nextProps.routing.locationBeforeTransitions.state);
-            } else if (!_.isEmpty(this.state.mount)
-              && !_.isEqual(this.state.mount, this.state.form)) {
-              this.props.dispatch(storeState(this.props.routing.locationBeforeTransitions.pathname, this.state.mount));
+        if (this.props.routing.location.pathname === nextProps.routing.location.pathname) {
+          if (!_.isEqual(this.state, nextProps.routing.location.state)) {
+            if (_.isObject(nextProps.routing.location.state)) {
+              this.props.dispatch(storeState(nextProps.routing.location.pathname, nextProps.routing.location.state));
+              this.setState(nextProps.routing.location.state);
+            } else if (!_.isEmpty(this.state.mount) && !_.isEqual(this.state.mount, this.state.form)) {
+              this.props.dispatch(storeState(this.props.routing.location.pathname, this.state.mount));
               this.setState({form: this.state.mount});
             }
           }
@@ -100,7 +90,7 @@ export default function connectToFilter(rest) {
       }
 
       onStack(key: string, value) {
-        return (!!this.state.form[key] && this.state.form[key].indexOf(String(value)) > -1);
+        return !!this.state.form[key] && this.state.form[key].indexOf(String(value)) > -1;
       }
 
       getParams() {
@@ -108,7 +98,7 @@ export default function connectToFilter(rest) {
       }
 
       inputOnStack(key: string) {
-        return (this.state.form[key] ? this.state.form[key] : '');
+        return this.state.form[key] ? this.state.form[key] : '';
       }
 
       sortOnStack(field) {
@@ -117,22 +107,22 @@ export default function connectToFilter(rest) {
         if (_.has(state, 'sort')) {
           if (_.get(state, 'sort.field') === field && _.get(state, 'sort.order') === 'asc') {
             state.sort = {
-              'field': field,
-              'order': 'desc'
+              field,
+              order: 'desc'
             };
           } else {
             state.sort = {
-              'field': field,
-              'order': 'asc'
+              field,
+              order: 'asc'
             };
           }
         } else {
           state.sort = {
-            'field': field,
-            'order': 'asc'
+            field,
+            order: 'asc'
           };
         }
-        this.setState({'form': state}, this.pushStateAttempt);
+        this.setState({form: state}, this.pushStateAttempt);
       }
 
       toggleOnStack(key: string, value) {
@@ -151,13 +141,13 @@ export default function connectToFilter(rest) {
         if (state.page) {
           state.page = null;
         }
-        this.setState({'form': state, skip: true}, this.pushStateAttempt);
+        this.setState({form: state}, this.pushStateAttempt);
       }
 
       removeFromState(key: string) {
         const state = Object.assign({}, this.state.form);
         delete state[key];
-        this.setState({'form': state, skip: true}, this.pushStateAttempt);
+        this.setState({form: state}, this.pushStateAttempt);
       }
 
       pushOnState(key: string, value, clear = []) {
@@ -173,29 +163,28 @@ export default function connectToFilter(rest) {
           });
         }
 
-        this.setState({'form': state, skip: true}, this.pushStateAttempt);
+        this.setState({form: state}, this.pushStateAttempt);
       }
 
       pushStateAttempt() {
-
         if (path === null) {
-          path = _.get(this.props.routing, 'locationBeforeTransitions.pathname');
+          path = _.get(this.props.routing, 'location.pathname');
         }
 
         this.props.dispatch(storeState(path, this.state.form));
         const q = this.stringifyFullState(_.omit(this.state.form, ['t']));
         if (q.length > 0) {
-          // this.context.router.push(_.get(this.props.routing, 'locationBeforeTransitions.pathname') + '?' + q);
-          this.context.router.push({
+          // this.context.router.history.push(_.get(this.props.routing, 'location.pathname') + '?' + q);
+          this.context.router.history.push({
             pathname: path,
-            query: _.omit(this.state.form, ['t']),
+            search: Qs.stringify(_.omit(this.state.form, ['t'])),
             state: this.state
           });
         } else {
           const d = new Date();
-          this.context.router.push({
+          this.context.router.history.push({
             pathname: path,
-            query: {t: d.getTime()},
+            search: Qs.stringify({t: d.getTime()}),
             state: this.state
           });
         }
@@ -210,17 +199,19 @@ export default function connectToFilter(rest) {
       pushSearch(value) {
         const form = this.state.form;
         form.q = value;
-        this.setState({
-          form: form,
-          skip: false
-        }, () => {
-          if (myTimeout) {
-            clearTimeout(myTimeout);
+        this.setState(
+          {
+            form
+          },
+          () => {
+            if (myTimeout) {
+              clearTimeout(myTimeout);
+            }
+            myTimeout = setTimeout(() => {
+              this.pushOnState('q', value);
+            }, 500);
           }
-          myTimeout = setTimeout(() => {
-            this.pushOnState('q', value);
-          }, 500);
-        });
+        );
       }
 
       clearTimer() {
@@ -240,14 +231,11 @@ export default function connectToFilter(rest) {
             </div>
             <div className="panel-body">
               <div className="filter-color-container">
-                <div className="row">
-                  {_.map(range, (val, key) => {
-                    return this.alphaFilter(name, key, val, stack);
-                  })}
-                </div>
+                <div className="row">{_.map(range, (val, key) => this.alphaFilter(name, key, val, stack))}</div>
               </div>
             </div>
-          </div>);
+          </div>
+        );
       }
 
       alphaFilter(name, key, item, stack) {
@@ -255,42 +243,57 @@ export default function connectToFilter(rest) {
           return (
             <button
               key={key}
-              className={classNames({'btn': true, 'btn-link': true, 'filter-size-box': true, 'active': stack === item})}
+              className={classNames({
+                btn: true,
+                'btn-link': true,
+                'filter-size-box': true,
+                active: stack === item
+              })}
               onClick={() => {
                 this.removeFromState(name, item);
-              }}>
+              }}
+            >
               {item}
-            </button>);
+            </button>
+          );
         }
 
         return (
           <button
             key={key}
-            className={classNames({'btn': true, 'btn-link': true, 'filter-size-box': true, 'active': stack === item})}
+            className={classNames({
+              btn: true,
+              'btn-link': true,
+              'filter-size-box': true,
+              active: stack === item
+            })}
             onClick={() => {
               this.pushOnState(name, item);
-            }}>
+            }}
+          >
             {item}
           </button>
         );
       }
 
       render() {
-        return (<WrappedComponent
-          {...this.props}
-          switchPage={this.switchPage}
-          pushOnState={this.pushOnState}
-          removeFromState={this.removeFromState}
-          getParams={this.getParams}
-          toggleOnStack={this.toggleOnStack}
-          inputOnStack={this.inputOnStack}
-          onStack={this.onStack}
-          sortOnStack={this.sortOnStack}
-          alphabet={this.alphabet}
-          pushSearch={this.pushSearch}
-          pushStateAttempt={this.pushStateAttempt}
-          reset={this.reset}
-        />);
+        return (
+          <WrappedComponent
+            {...this.props}
+            switchPage={this.switchPage}
+            pushOnState={this.pushOnState}
+            removeFromState={this.removeFromState}
+            getParams={this.getParams}
+            toggleOnStack={this.toggleOnStack}
+            inputOnStack={this.inputOnStack}
+            onStack={this.onStack}
+            sortOnStack={this.sortOnStack}
+            alphabet={this.alphabet}
+            pushSearch={this.pushSearch}
+            pushStateAttempt={this.pushStateAttempt}
+            reset={this.reset}
+          />
+        );
       }
     }
 
