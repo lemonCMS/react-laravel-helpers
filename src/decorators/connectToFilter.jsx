@@ -17,6 +17,8 @@ import {storeState} from '../redux/routeState/actions';
 let myTimeout = null;
 
 export function createAllParamsForFetch(state) {
+  console.log('state', state);
+
   const {routing: {location: {pathname}}} = state;
   const params = _assign(_get(state, ['routesState', 'routes', pathname, 'form'], {}), Qs.parse(_get(state, ['routing', 'location', 'search'], '').substr(1)));
 
