@@ -7,7 +7,7 @@ import _cloneDeep from 'lodash/cloneDeep';
 import _isFunction from 'lodash/isFunction';
 import {connect} from 'react-redux';
 import {Alert} from 'react-bootstrap';
-import {Link} from 'react-router';
+import {Link} from 'react-router-dom';
 import {provideHooks} from '@wicked_query/redial';
 import {load, clearItem, destroyItem} from '../redux/store/actions';
 import DataTable from '../components/DataTable';
