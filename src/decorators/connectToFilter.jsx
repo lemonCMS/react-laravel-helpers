@@ -1,5 +1,13 @@
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import _get from 'lodash/get';
+import _assign from 'lodash/assign';
+import _omit from 'lodash/omit';
+import _has from 'lodash/has';
+import _clone from 'lodash/clone';
+import _isEqual from 'lodash/isEqual';
+import _isObject from 'lodash/isObject';
+import _isEmpty from 'lodash/isEmpty';
+import _map from 'lodash/map';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import classNames from 'classnames';
@@ -10,9 +18,9 @@ let myTimeout = null;
 
 export function createAllParamsForFetch(state) {
   const {routing: {location: {pathname}}} = state;
-  const params = _.assign(_.get(state, ['routesState', 'routes', pathname, 'form'], {}), Qs.parse(_.get(state, ['routing', 'location', 'search'], '').substr(1)));
+  const params = _assign(_get(state, ['routesState', 'routes', pathname, 'form'], {}), Qs.parse(_get(state, ['routing', 'location', 'search'], '').substr(1)));
 
-  return _.omit(params, value => !value);
+  return _omit(params, value => !value);
 }
 
 export default function connectToFilter(rest) {
@@ -63,21 +71,21 @@ export default function connectToFilter(rest) {
       }
 
       stringifyFullState(state) {
-        return Qs.stringify(_.omit(state, value => !value), {encode: false});
+        return Qs.stringify(_omit(state, value => !value), {encode: false});
       }
 
       componentWillMount() {
         const params = createAllParamsForFetch(this.props);
-        this.setState({form: _.clone(params), mount: _.clone(params)});
+        this.setState({form: _clone(params), mount: _clone(params)});
       }
 
       componentWillReceiveProps(nextProps) {
         if (this.props.routing.location.pathname === nextProps.routing.location.pathname) {
-          if (!_.isEqual(this.state, nextProps.routing.location.state)) {
-            if (_.isObject(nextProps.routing.location.state)) {
+          if (!_isEqual(this.state, nextProps.routing.location.state)) {
+            if (_isObject(nextProps.routing.location.state)) {
               this.props.dispatch(storeState(nextProps.routing.location.pathname, nextProps.routing.location.state));
               this.setState(nextProps.routing.location.state);
-            } else if (!_.isEmpty(this.state.mount) && !_.isEqual(this.state.mount, this.state.form)) {
+            } else if (!_isEmpty(this.state.mount) && !_isEqual(this.state.mount, this.state.form)) {
               this.props.dispatch(storeState(this.props.routing.location.pathname, this.state.mount));
               this.setState({form: this.state.mount});
             }
@@ -104,8 +112,8 @@ export default function connectToFilter(rest) {
       sortOnStack(field) {
         const state = Object.assign({}, this.state.form);
 
-        if (_.has(state, 'sort')) {
-          if (_.get(state, 'sort.field') === field && _.get(state, 'sort.order') === 'asc') {
+        if (_has(state, 'sort')) {
+          if (_get(state, 'sort.field') === field && _get(state, 'sort.order') === 'asc') {
             state.sort = {
               field,
               order: 'desc'
@@ -158,7 +166,7 @@ export default function connectToFilter(rest) {
         }
 
         if (Object.keys(clear).length > 0) {
-          _.map(clear, (field) => {
+          _map(clear, (field) => {
             state[field] = undefined;
           });
         }
@@ -168,16 +176,16 @@ export default function connectToFilter(rest) {
 
       pushStateAttempt() {
         if (path === null) {
-          path = _.get(this.props.routing, 'location.pathname');
+          path = _get(this.props.routing, 'location.pathname');
         }
 
         this.props.dispatch(storeState(path, this.state.form));
-        const q = this.stringifyFullState(_.omit(this.state.form, ['t']));
+        const q = this.stringifyFullState(_omit(this.state.form, ['t']));
         if (q.length > 0) {
-          // this.context.router.history.push(_.get(this.props.routing, 'location.pathname') + '?' + q);
+          // this.context.router.history.push(_get(this.props.routing, 'location.pathname') + '?' + q);
           this.context.router.history.push({
             pathname: path,
-            search: Qs.stringify(_.omit(this.state.form, ['t'])),
+            search: Qs.stringify(_omit(this.state.form, ['t'])),
             state: this.state
           });
         } else {
@@ -231,7 +239,7 @@ export default function connectToFilter(rest) {
             </div>
             <div className="panel-body">
               <div className="filter-color-container">
-                <div className="row">{_.map(range, (val, key) => this.alphaFilter(name, key, val, stack))}</div>
+                <div className="row">{_map(range, (val, key) => this.alphaFilter(name, key, val, stack))}</div>
               </div>
             </div>
           </div>

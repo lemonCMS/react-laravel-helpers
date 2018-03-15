@@ -1,6 +1,6 @@
 {
   "name": "react-laravel-helpers",
-  "version": "0.0.5",
+  "version": "1.0.0-beta.1",
   "description": "Containing usefull decoratoros and react components to create an easy Admin enviroment with laravel as backend",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,7 @@
     "url": "git+https://github.com/lemonCMS/react-laravel-helpers.git"
   },
   "author": "Raymond van Vuuren <rsvvuuren@hotmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/lemonCMS/react-laravel-helpers/issues"
   },

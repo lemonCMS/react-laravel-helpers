@@ -9,12 +9,12 @@ import {connect} from 'react-redux';
 import {Alert} from 'react-bootstrap';
 import {Link} from 'react-router';
 import {asyncConnect} from 'redux-connect';
-import {load, clearItem, destroyItem} from '../redux/modules/store';
+import {load, clearItem, destroyItem} from '../redux/store/actions';
 import DataTable from '../components/Data/DataTable';
-import connectToFilter, {createAllParamsForFetch} from '../decorators/connectToFilter';
-import connectToConfirm from '../decorators/connectToConfirm';
-import Search from '../components/Fields/Search';
-import Pending from '../components/Pending/Pending';
+import connectToFilter, {createAllParamsForFetch} from './connectToFilter';
+import connectToConfirm from './connectToConfirm';
+import Search from '../components/Search';
+import Pending from '../components/Pending';
 
 export default function connnectToList(properties) {
   return (WrappedComponent) => {
