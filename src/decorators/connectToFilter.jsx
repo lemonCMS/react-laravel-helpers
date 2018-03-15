@@ -17,9 +17,9 @@ import {storeState} from '../redux/routeState/actions';
 let myTimeout = null;
 
 export function createAllParamsForFetch(state) {
-  console.log('state', state);
 
-  const {routing: {location: {pathname}}} = state;
+
+  const pathname = _get(state, 'routing.location.pathname', null);
   const params = _assign(_get(state, ['routesState', 'routes', pathname, 'form'], {}), Qs.parse(_get(state, ['routing', 'location', 'search'], '').substr(1)));
 
   return _omit(params, value => !value);
@@ -77,6 +77,7 @@ export default function connectToFilter(rest) {
       }
 
       componentWillMount() {
+        console.log(this.context.router);
         const params = createAllParamsForFetch(this.props);
         this.setState({form: _clone(params), mount: _clone(params)});
       }
