@@ -1,6 +1,6 @@
 {
   "name": "react-laravel-helpers",
-  "version": "1.0.0-beta.3",
+  "version": "1.0.0-beta.4",
   "description": "Containing usefull decoratoros and react components to create an easy Admin enviroment with laravel as backend",
   "main": "index.js",
   "scripts": {

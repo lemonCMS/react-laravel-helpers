@@ -8,7 +8,7 @@ import _isFunction from 'lodash/isFunction';
 import {connect} from 'react-redux';
 import {Alert} from 'react-bootstrap';
 import {Link} from 'react-router';
-import {asyncConnect} from 'redux-connect';
+import {provideHooks} from '@wicked_query/redial';
 import {load, clearItem, destroyItem} from '../redux/store/actions';
 import DataTable from '../components/DataTable';
 import connectToFilter, {createAllParamsForFetch} from './connectToFilter';
@@ -18,11 +18,10 @@ import Pending from '../components/Pending';
 
 export default function connnectToList(properties) {
   return (WrappedComponent) => {
-    @asyncConnect([{
-      promise: ({params, store: {dispatch, getState}}) => {
+    @provideHooks({
+      fetch: ({store: {dispatch, getState}, params}) => {
         const promises = [];
         const state = createAllParamsForFetch(getState());
-        // if (!isLoaded(properties.key, getState(), params)) {
         const api = () => {
           if (_isFunction(properties.api)) {
             return properties.api(params);
@@ -31,18 +30,16 @@ export default function connnectToList(properties) {
         };
 
         promises.push(dispatch(load(properties.key, api(), state)));
-        // }
         return Promise.all(promises);
       }
-    }])
+    })
     @connectToFilter()
     @connectToConfirm()
-    @connect(
-      state => ({
+    @connect(state => (
+      {
         data: state.store[properties.key],
         auth: state.auth,
-      })
-    )
+      }))
     class Connection extends Component {
       constructor() {
         super();
@@ -105,11 +102,15 @@ export default function connnectToList(properties) {
         return (
           <div className="panel panel-border-tb">
             <div className="panel-heading">
-              <Link to={`${properties.path}/new`} className="pull-right"><i className="fa fa-plus" /> nieuw item aanmaken</Link>
+              <Link to={`${properties.path}/new`} className="pull-right"><i className="fa fa-plus" /> nieuw item
+                aanmaken</Link>
               <h4 className="pnael-title">Verfijn</h4>
             </div>
             <div className="panel-body">
-              <Search pushSearch={this.props.pushSearch} inputOnStack={this.props.inputOnStack} query={this.props.inputOnStack('q')} />
+              <Search
+                pushSearch={this.props.pushSearch}
+                inputOnStack={this.props.inputOnStack}
+                query={this.props.inputOnStack('q')} />
             </div>
           </div>);
       }
