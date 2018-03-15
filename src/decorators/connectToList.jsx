@@ -10,7 +10,7 @@ import {Alert} from 'react-bootstrap';
 import {Link} from 'react-router';
 import {asyncConnect} from 'redux-connect';
 import {load, clearItem, destroyItem} from '../redux/store/actions';
-import DataTable from '../components/Data/DataTable';
+import DataTable from '../components/DataTable';
 import connectToFilter, {createAllParamsForFetch} from './connectToFilter';
 import connectToConfirm from './connectToConfirm';
 import Search from '../components/Search';
