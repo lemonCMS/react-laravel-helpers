@@ -1,5 +1,6 @@
 import _isEqual from 'lodash/isEqual';
 import _get from 'lodash/get';
+import _set from 'lodash/set';
 import * as constants from './constants';
 
 export function simpleLoad(key, path, params = {}) {
@@ -226,11 +227,14 @@ export function isAllLoaded(key, globalState) {
   return (_get(globalState, [constants.reducerIndex, key, 'allStatus', 'success'], false));
 }
 
-export function isLoaded(key, globalState, params) {
-  return (
-    _get(globalState, [constants.reducerIndex, key, 'success'], false) === true &&
-    parseInt(_get(globalState, [constants.reducerIndex, key, 'list', 'current_page'], 1), 10) === parseInt(_get(params, 'page', 1), 10)
-  );
+const Allparams = {};
+export function isLoaded(key, globalState, params = {}) {
+  const check = _get(globalState, [constants.reducerIndex, key, 'success'], false) === true
+    && parseInt(_get(globalState, [constants.reducerIndex, key, 'list', 'current_page'], 1), 10) === parseInt(_get(params, 'page', 1), 10)
+    && JSON.stringify(params) === JSON.stringify(_get(Allparams, key, {}));
+
+  _set(Allparams, key, JSON.parse(JSON.stringify(params)));
+  return check;
 }
 
 export function isLoadedSimple(key, globalState, path, params = {}) {
