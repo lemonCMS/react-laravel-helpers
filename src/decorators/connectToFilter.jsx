@@ -77,7 +77,6 @@ export default function connectToFilter(rest) {
       }
 
       componentWillMount() {
-        console.log(this.context.router);
         const params = createAllParamsForFetch(this.props);
         this.setState({form: _clone(params), mount: _clone(params)});
       }
