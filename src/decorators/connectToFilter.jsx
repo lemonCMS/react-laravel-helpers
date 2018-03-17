@@ -99,7 +99,7 @@ export default function connectToFilter(rest) {
         this.setState({form: {}}, this.pushStateAttempt);
       }
 
-      onStack(key: string, value) {
+      onStack(key, value) {
         return !!this.state.form[key] && this.state.form[key].indexOf(String(value)) > -1;
       }
 
@@ -107,7 +107,7 @@ export default function connectToFilter(rest) {
         return createAllParamsForFetch(this.props);
       }
 
-      inputOnStack(key: string) {
+      inputOnStack(key) {
         return this.state.form[key] ? this.state.form[key] : '';
       }
 
@@ -135,7 +135,7 @@ export default function connectToFilter(rest) {
         this.setState({form: state}, this.pushStateAttempt);
       }
 
-      toggleOnStack(key: string, value) {
+      toggleOnStack(key, value) {
         const state = Object.assign({}, this.state.form);
 
         if (!state[key]) {
@@ -154,13 +154,13 @@ export default function connectToFilter(rest) {
         this.setState({form: state}, this.pushStateAttempt);
       }
 
-      removeFromState(key: string) {
+      removeFromState(key) {
         const state = Object.assign({}, this.state.form);
         delete state[key];
         this.setState({form: state}, this.pushStateAttempt);
       }
 
-      pushOnState(key: string, value, clear = []) {
+      pushOnState(key, value, clear = []) {
         const state = Object.assign({}, this.state.form);
         state[key] = value;
         if (state.page) {
@@ -200,7 +200,7 @@ export default function connectToFilter(rest) {
         }
       }
 
-      switchPage(page: number) {
+      switchPage(page) {
         const state = Object.assign({}, this.state.form);
         state.page = page;
         this.setState({form: state}, this.pushStateAttempt);
