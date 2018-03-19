@@ -8,7 +8,6 @@ class TestComponent extends React.Component {
   constructor(key, path) {
     super();
     this.edit = this.edit.bind(this);
-    this.handleSubmit = this.onSubmit.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.key = key;
     this.path = path;
