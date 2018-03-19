@@ -116,11 +116,11 @@ export default function connnectToList(properties) {
       }
 
       show(item) {
-        this.context.router.push(`${this.state.path}/${item.id}`);
+        this.context.router.history.push(`${this.state.path}/${item.id}`);
       }
 
       edit(item) {
-        this.context.router.push(`${this.state.path}/${item.id}/edit`);
+        this.context.router.history.push(`${this.state.path}/${item.id}/edit`);
       }
 
       destroy(item) {
