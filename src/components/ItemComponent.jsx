@@ -1,64 +1,54 @@
 import PropTypes from 'prop-types';
-import _get from 'lodash/get';
 import React from 'react';
+import _get from 'lodash/get';
+import _has from 'lodash/has';
 import {post, update, clearNetworkState} from '../redux/store/actions';
 
 class TestComponent extends React.Component {
 
-  constructor(key, path) {
-    super();
+  constructor(props, context) {
+    super(props, context);
     this.edit = this.edit.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
-    this.key = key;
-    this.path = path;
   }
-
-  static contextTypes = {
-    'router': PropTypes.object
-  };
 
   componentWillMount() {
     this.setState({
-      edit: this.props.routing.history.pathname.match(/(edit|confirm|close)$/g),
-      confirm: this.props.routing.history.pathname.match(/confirm$/g),
-      close: this.props.routing.history.pathname.match(/close/g),
-      newItem: this.props.routing.history.pathname.match(/new/g)
+      edit: _has(this.context.router.history.location.pathname.match(/(edit|confirm|close)$/g), [0]),
+      confirm: _has(this.context.router.history.location.pathname.match(/confirm$/g), [0]),
+      close: _has(this.context.router.history.location.pathname.match(/close/g), [0]),
+      newItem: _has(this.context.router.history.location.pathname.match(/new/g), [0])
     });
   }
 
-  componentWillReceiveProps(nextProps) {
-    const thisProps = JSON.parse(JSON.stringify(this.props));
-    const nProps = JSON.parse(JSON.stringify(nextProps));
+  componentWillReceiveProps() {
     this.setState({
-      edit: nextProps.routing.history.pathname.match(/edit$/g),
-      newItem: nextProps.routing.history.pathname.match(/new/g)
-    }, () => {
-      if (!!this.state.newItem &&
-        _get(thisProps, 'item.actionStatus.success', false) === false &&
-        _get(nProps, 'item.actionStatus.success', false) === true) {
-        this.context.router.history.push(`${this.path}/${this.props.item.id}/edit`);
-      }
+      edit: _has(this.context.router.history.location.pathname.match(/(edit|confirm|close)$/g), [0]),
+      confirm: _has(this.context.router.history.location.pathname.match(/confirm$/g), [0]),
+      close: _has(this.context.router.history.location.pathname.match(/close/g), [0]),
+      newItem: _has(this.context.router.history.location.pathname.match(/new/g), [0])
     });
-  }
-
-  componentWillUnmount() {
-    this.props.dispatch(clearNetworkState(this.key));
   }
 
   onSubmit = async (payload) => {
     return new Promise((resolve) => {
       let promise = null;
-      if (this.state.edit) {
-        promise = this.context.store.dispatch(post(this.key, `/admin/${this.key}`, payload));
+      if (!this.state.edit) {
+        promise = this.context.store.dispatch(post(this.key, `/admin/${this.path}`, payload));
       } else {
-        promise = this.context.store.dispatch(update(this.key, `/admin/${this.key}`, this.props.params.id, payload));
+        promise = this.context.store.dispatch(update(this.key, `/admin/${this.path}`, this.props.params.id, payload));
       }
 
       promise.then((ret) => {
         if (ret && ret.hasOwnProperty('error')) {
           resolve(ret.error);
         }
+        if (this.state.newItem) {
+          console.log('POP', ret);
+          this.context.router.history.push(`${this.path}/${_get(ret, 'id', 'new')}/edit`);
+        }
         resolve();
+
       }).catch((err) => {
         if (err && err.hasOwnProperty('error')) {
           resolve(err.error);
@@ -79,10 +69,7 @@ class TestComponent extends React.Component {
 }
 
 TestComponent.propTypes = {
-  'dispatch': PropTypes.func,
-  'item': PropTypes.object,
-  'params': PropTypes.object,
-  'routing': PropTypes.object
+  'params': PropTypes.object
 };
 TestComponent.defaultProps = {};
 
