@@ -10,7 +10,7 @@ export function simpleLoad(key, path, params = {}) {
     path,
     params,
     promise: ({client}) => client.get(path, {
-      params: {...params}
+      params
     })
   };
 }
@@ -26,11 +26,7 @@ export function load(key, path, params) {
   return {
     types: [constants.STORE_LIST, constants.STORE_LIST_SUCCESS, constants.STORE_LIST_FAIL],
     key,
-    promise: ({client}) => client.get(path, {
-      params: {
-        ...params
-      }
-    })
+    promise: ({client}) => client.get(path, { params })
   };
 }
 
@@ -65,9 +61,7 @@ export function updateAndDispatch(key, path, id, params) {
   return {
     types: [constants.STORE_ITEM_LOCAL_UPDATE, constants.STORE_ITEM_LOCAL_UPDATE_SUCCESS, constants.STORE_ITEM_LOCAL_UPDATE_FAIL],
     key,
-    promise: ({client}) => client.put(path + '/' + id, {
-      data: params
-    }),
+    promise: ({client}) => client.put(path + '/' + id, params),
     payload: params
   };
 }
@@ -76,9 +70,7 @@ export function update(key, path, id, params) {
   return {
     types: [constants.STORE_ITEM_UPDATE, constants.STORE_ITEM_UPDATE_SUCCESS, constants.STORE_ITEM_UPDATE_FAIL],
     key,
-    promise: ({client}) => client.put(path + '/' + id, {
-      data: params
-    }),
+    promise: ({client}) => client.put(path + '/' + id, params),
     payload: params
   };
 }
@@ -88,9 +80,7 @@ export function updateDeep(key, path, id, params, pathDeep, cb) {
   return {
     types: [constants.STORE_ITEM_UPDATE_DEEP, constants.STORE_ITEM_UPDATE_DEEP_SUCCESS, constants.STORE_ITEM_UPDATE_DEEP_FAIL],
     key,
-    promise: ({client}) => client.put(path + '/' + id, {
-      data: params
-    }),
+    promise: ({client}) => client.put(path + '/' + id, params),
     payload: params,
     pathDeep,
     cb
@@ -101,9 +91,7 @@ export function destroyDeep(key, path, id, params, pathDeep, cb) {
   return {
     types: [constants.STORE_ITEM_DELETE_DEEP, constants.STORE_ITEM_DELETE_DEEP_SUCCESS, constants.STORE_ITEM_DELETE_DEEP_FAIL],
     key,
-    promise: ({client}) => client.del(path + '/' + id, {
-      data: params
-    }),
+    promise: ({client}) => client.delete(path + '/' + id, {params}),
     payload: params,
     pathDeep,
     cb
@@ -114,9 +102,7 @@ export function createDeep(key, path, params, pathDeep) {
   return {
     types: [constants.STORE_ITEM_CREATE_DEEP, constants.STORE_ITEM_CREATE_DEEP_SUCCESS, constants.STORE_ITEM_CREATE_DEEP_FAIL],
     key,
-    promise: ({client}) => client.post(path, {
-      data: params
-    }),
+    promise: ({client}) => client.post(path, params),
     pathDeep
   };
 }
@@ -125,9 +111,7 @@ export function create(key, path, params) {
   return {
     types: [constants.STORE_ITEM_CREATE, constants.STORE_ITEM_CREATE_SUCCESS, constants.STORE_ITEM_CREATE_FAIL],
     key,
-    promise: ({client}) => client.post(path, {
-      data: params
-    }),
+    promise: ({client}) => client.post(path, params),
     payload: params
   };
 }
@@ -136,9 +120,7 @@ export function post(key, path, params) {
   return {
     types: [constants.STORE_ITEM_CREATE, constants.STORE_ITEM_CREATE_SUCCESS, constants.STORE_ITEM_CREATE_FAIL],
     key,
-    promise: ({client}) => client.post(path, {
-      data: params
-    }),
+    promise: ({client}) => client.post(path, params),
     payload: params
   };
 }
@@ -159,7 +141,7 @@ export function destroyItem(key, path, id) {
   return {
     types: [constants.STORE_ITEM_DELETE, constants.STORE_ITEM_DELETE_SUCCESS, constants.STORE_ITEM_DELETE_FAIL],
     key,
-    promise: ({client}) => client.del(path + '/' + id)
+    promise: ({client}) => client.delete(path + '/' + id)
   };
 }
 
@@ -191,21 +173,13 @@ export function loadStackItem(key, path, id, params) {
     types: [constants.STORE_STACK_ITEM_LOAD, constants.STORE_STACK_ITEM_LOAD_SUCCESS, constants.STORE_STACK_ITEM_LOAD_FAILED],
     key,
     id,
-    promise: ({client}) => client.get(path, {
-      params: {
-        ...params
-      }
-    })
+    promise: ({client}) => client.get(path, params)
   };
 }
 
 export function request(type, path, params) {
   return (dispatch, state, client) =>
-    client[type](path, {
-      params: {
-        ...params
-      }
-    }).catch(Exception => alert(Exception.message));
+    client[type](path, params).catch(Exception => alert(Exception.message));
 }
 
 export function clearStackItem(key, id) {
