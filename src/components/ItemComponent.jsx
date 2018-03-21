@@ -34,9 +34,9 @@ class TestComponent extends React.Component {
     return new Promise((resolve) => {
       let promise = null;
       if (!this.state.edit) {
-        promise = this.context.store.dispatch(post(this.key, `/admin/${this.path}`, payload));
+        promise = this.context.store.dispatch(post(this.key, `${this.path}`, payload));
       } else {
-        promise = this.context.store.dispatch(update(this.key, `/admin/${this.path}`, this.props.params.id, payload));
+        promise = this.context.store.dispatch(update(this.key, `${this.path}`, this.props.params.id, payload));
       }
 
       promise.then((ret) => {
@@ -44,7 +44,6 @@ class TestComponent extends React.Component {
           resolve(ret.error);
         }
         if (this.state.newItem) {
-          console.log('POP', ret);
           this.context.router.history.push(`${this.path}/${_get(ret, 'id', 'new')}/edit`);
         }
         resolve();
