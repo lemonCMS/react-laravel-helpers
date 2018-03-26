@@ -13,8 +13,12 @@ class TestComponent extends React.Component {
   }
 
   componentWillMount() {
+    const edit = _has(this.context.router.history.location.pathname.match(/(edit|confirm|close)$/g), [0]);
+    const id = edit ? this.context.router.route.match.params.id : null;
+
     this.setState({
-      edit: _has(this.context.router.history.location.pathname.match(/(edit|confirm|close)$/g), [0]),
+      id: id,
+      edit: edit,
       confirm: _has(this.context.router.history.location.pathname.match(/confirm$/g), [0]),
       close: _has(this.context.router.history.location.pathname.match(/close/g), [0]),
       newItem: _has(this.context.router.history.location.pathname.match(/new/g), [0])
@@ -22,7 +26,11 @@ class TestComponent extends React.Component {
   }
 
   componentWillReceiveProps() {
+    const edit = _has(this.context.router.history.location.pathname.match(/(edit|confirm|close)$/g), [0]);
+    const id = edit ? this.context.router.route.match.params.id : null;
+
     this.setState({
+      id: id,
       edit: _has(this.context.router.history.location.pathname.match(/(edit|confirm|close)$/g), [0]),
       confirm: _has(this.context.router.history.location.pathname.match(/confirm$/g), [0]),
       close: _has(this.context.router.history.location.pathname.match(/close/g), [0]),
