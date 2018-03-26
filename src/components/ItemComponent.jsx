@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import _get from 'lodash/get';
 import _has from 'lodash/has';
-import {post, update, clearNetworkState} from '../redux/store/actions';
+import {post, update} from '../redux/store/actions';
 
 class TestComponent extends React.Component {
 
@@ -34,9 +34,9 @@ class TestComponent extends React.Component {
     return new Promise((resolve) => {
       let promise = null;
       if (!this.state.edit) {
-        promise = this.context.store.dispatch(post(this.key, `${this.path}`, payload));
+        promise = this.context.store.dispatch(post(this.key, `${this.apiPath}`, payload));
       } else {
-        promise = this.context.store.dispatch(update(this.key, `${this.path}`, this.props.params.id, payload));
+        promise = this.context.store.dispatch(update(this.key, `${this.apiPath}`, this.props.params.id, payload));
       }
 
       promise.then((ret) => {
