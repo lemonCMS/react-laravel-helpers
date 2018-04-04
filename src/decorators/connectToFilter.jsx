@@ -21,7 +21,7 @@ export function createAllParamsForFetch(state, location) {
   const params = _assign(
     _get(state, ['routesState', 'routes', pathname, 'form'], {}),
     Qs.parse(_get(state, ['routing', 'location', 'search'], ''), {ignoreQueryPrefix: true}),
-    Qs.parse(location.search, {ignoreQueryPrefix: true})
+    Qs.parse(_get(location, 'search', ''), {ignoreQueryPrefix: true})
   );
 
   return _omit(params, value => !value);
