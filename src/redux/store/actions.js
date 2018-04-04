@@ -3,6 +3,15 @@ import _get from 'lodash/get';
 import _set from 'lodash/set';
 import * as constants from './constants';
 
+export function multiUpdate(key, path, params) {
+  return {
+    types: [constants.STORE_LIST_UPDATE, constants.STORE_LIST_UPDATE_SUCCESS, constants.STORE_LIST_UPDATE_FAIL],
+    key,
+    params,
+    promise: client => client.post(path, params)
+  };
+}
+
 export function simpleLoad(key, path, params = {}) {
   return {
     types: [constants.STORE_SIMPLE_LOAD, constants.STORE_SIMPLE_LOAD_SUCCESS, constants.STORE_SIMPLE_LOAD_FAIL],
