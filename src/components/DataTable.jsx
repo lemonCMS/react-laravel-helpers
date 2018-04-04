@@ -6,6 +6,7 @@ import _isEmpty from 'lodash/isEmpty';
 import _isString from 'lodash/isString';
 import _isArray from 'lodash/isArray';
 import _compact from 'lodash/compact';
+import _find from 'lodash/find';
 import React, {Component} from 'react';
 import {Alert, ButtonToolbar, DropdownButton, MenuItem, Image} from 'react-bootstrap';
 import Paginator from './Paginator';
@@ -43,10 +44,29 @@ export default class DataTable extends Component {
     this.renderDropDownItems = this.renderDropDownItems.bind(this);
     this.renderPaginator = this.renderPaginator.bind(this);
     this.getValue = this.getValue.bind(this);
+    this.check = this.check.bind(this);
+    this.pushIds = this.pushIds.bind(this);
     this.state = {
       orderCol: null,
-      checked: []
+      checked: {},
+      current: {},
+      ids: {}
     };
+  }
+
+  pushIds(props) {
+    const ids = this.state.ids;
+    const current = [];
+    _map(props.records, (record) => {
+      if (!_find(ids, {id: record.id})) {
+        ids.push({id: record.id, checked: false, clicked: false});
+        current.push(record.id);
+      }
+    });
+    this.setState({
+      ids: ids,
+      current: current
+    });
   }
 
   renderRows() {
@@ -65,6 +85,22 @@ export default class DataTable extends Component {
         {this.renderCols(this.props.cols)}
       </tr>
     );
+  }
+
+  check(event, key) {
+    const checked = Object.assign(this.state.checked);
+    const ids = Object.assign(this.state.ids);
+    if (!ids[`box-${key}`]) {
+      ids[`box-${key}`] = [];
+    }
+    _map(this.props.records, (record) => {
+      ids[`box-${key}`].splice(ids[`box-${key}`].indexOf(record.id, 1));
+      if (event.target.checked) {
+        ids[`box-${key}`].push(record.id);
+      }
+    });
+    checked[`box-${key}`] = event.target.checked;
+    this.setState({ids: ids, checked: checked});
   }
 
   renderCols(cols) {
@@ -107,6 +143,18 @@ export default class DataTable extends Component {
         });
       };
 
+      let actions = false;
+      if (_has(col, 'actions')) {
+        actions = _map(col.actions, (button, key2) => {
+          return <MenuItem
+            key={key2}
+            eventKey={key2}
+            onSelect={() => {
+              button.action(this.state.ids);
+            }}>{button.name}</MenuItem>;
+        });
+      }
+
       const title = () => {
         if (_get(col, 'filterBy', false) !== false) {
           const onStack = this.props.inputOnStack(_get(col, 'show'));
@@ -145,11 +193,13 @@ export default class DataTable extends Component {
       const filterBy = _get(col, 'filterBy', false);
       if (filterBy !== false) {
         return (
-          <th key={key}
+          <th
+            key={key}
             width={_get(col, 'width', 'auto')}
             colSpan={_get(col, 'colSpan', '1')}>
             <ButtonToolbar>
-              <DropdownButton bsStyle="link"
+              <DropdownButton
+                bsStyle="link"
                 title={title()}
                 id={'dropdown-size-extra-small' + key}>
                 {_map(_get(col, 'filterBy', []), (item, itemKey) => {
@@ -172,6 +222,8 @@ export default class DataTable extends Component {
                   }}>
                   reset
                 </MenuItem>
+                {actions && <MenuItem divider />}
+                {actions && actions}
               </DropdownButton>
             </ButtonToolbar>
           </th>
@@ -181,17 +233,47 @@ export default class DataTable extends Component {
       const order = _get(col, 'order', false);
       if (order === true) {
         return (
-          <th key={key}
+          <th
+            key={key}
             width={_get(col, 'width', 'auto')}
             colSpan={_get(col, 'colSpan', '1')}>
             <ButtonToolbar>
-              <DropdownButton bsStyle="link"
+              <DropdownButton
+                bsStyle="link"
                 title={title()}
                 id={'dropdown-size-extra-small' + key}>
-                <MenuItem eventKey="1"
+                <MenuItem
+                  eventKey="1"
                   onSelect={select1}>A ... Z</MenuItem>
-                <MenuItem eventKey="2"
+                <MenuItem
+                  eventKey="2"
                   onSelect={select2}>Z ... A</MenuItem>
+                {actions && <MenuItem divider />}
+                {actions && actions}
+              </DropdownButton>
+            </ButtonToolbar>
+          </th>
+        );
+      }
+
+      if (actions) {
+        return (
+          <th
+            key={key}
+            width={_get(col, 'width', 'auto')}
+            colSpan={_get(col, 'colSpan', '1')}>
+            <input
+              type="checkbox"
+              onChange={(event) => {
+                this.check(event, key);
+              }}
+              defaultChecked={this.state.checked[`box-${key}`]} />
+            <ButtonToolbar>
+              <DropdownButton
+                bsStyle="link"
+                title={title()}
+                id={'dropdown-size-extra-small' + key}>
+                {actions}
               </DropdownButton>
             </ButtonToolbar>
           </th>
@@ -199,7 +281,8 @@ export default class DataTable extends Component {
       }
 
       return (
-        <th key={key}
+        <th
+          key={key}
           width={_get(col, 'width', 'auto')}
           colSpan={_get(col, 'colSpan', '1')}>
           {_get(col, 'name', '')}
@@ -220,7 +303,8 @@ export default class DataTable extends Component {
     if (_has(this.props, 'rows')) {
       return _map(this.props.rows, (row, keyRow) => {
         return (
-          <tr key={`${key}-${keyRow}`}
+          <tr
+            key={`${key}-${keyRow}`}
             className={`data-table-row${keyRow}`}>
             {this.renderRecordCols(row.cols, record)}
           </tr>
@@ -238,18 +322,27 @@ export default class DataTable extends Component {
   renderRecordCols(cols, record) {
     return _map(cols, (col, key) => {
       const value = this.getValue(record, col, key);
-      return (<td key={key}
+      return (<td
+        key={key}
         colSpan={_get(col, 'colSpan', '1')}
         className={_get(col, 'className', '')}>{value}</td>);
     });
   }
 
   getValue(record, col, key) {
-
     const cell = [];
     if (_has(col, 'checkbox')) {
       const click = (event) => {
         col.checkbox(event, record, this.props.dispatch);
+        const ids = this.state.ids;
+        if (!ids[`box-${key}`]) {
+          ids[`box-${key}`] = [];
+        }
+        ids[`box-${key}`].splice(ids[`box-${key}`].indexOf(record.id, 1));
+        if (event.target.checked) {
+          ids[`box-${key}`].push(record.id);
+        }
+        this.setState({ids: ids});
       };
       return (
         <input
@@ -262,7 +355,8 @@ export default class DataTable extends Component {
     }
     if (_has(col, 'image')) {
       if (_has(record, col.image)) {
-        cell.push(<Image key="image"
+        cell.push(<Image
+          key="image"
           src={`/image/small/${_get(record, col.image)}`}
           responsive
           thumbnail />);
@@ -270,7 +364,8 @@ export default class DataTable extends Component {
     }
 
     if (_has(col, 'text')) {
-      cell.push(<span key="text"
+      cell.push(<span
+        key="text"
         className="data-table-static-text">{col.text}</span>);
     }
 
@@ -291,7 +386,8 @@ export default class DataTable extends Component {
         col.onClick(record, this.props.auth, this.context.router);
       };
       cell.push((
-        <button className="btn btn-link"
+        <button
+          className="btn btn-link"
           key="link"
           onClick={click}>{_get(col, 'link')}</button>
       ));
@@ -309,7 +405,8 @@ export default class DataTable extends Component {
           show = _get(item, col.arrayShow, '');
         }
 
-        cell.push(<button type="button"
+        cell.push(<button
+          type="button"
           key={key2}
           className="btn btn-link"
           onClick={() => {
@@ -389,11 +486,13 @@ export default class DataTable extends Component {
       };
 
       if (_has(button, 'divider')) {
-        return <MenuItem key={key}
+        return <MenuItem
+          key={key}
           divider />;
       }
 
-      return <MenuItem key={key}
+      return <MenuItem
+        key={key}
         eventKey={key}
         onSelect={click}>{button.name}</MenuItem>;
     });
@@ -401,7 +500,8 @@ export default class DataTable extends Component {
 
   renderPaginator() {
     const {paginator: {currPage, lastPage, onChange}} = this.props;
-    return <Paginator currPage={currPage}
+    return <Paginator
+      currPage={currPage}
       lastPage={lastPage}
       onChange={onChange} />;
   }

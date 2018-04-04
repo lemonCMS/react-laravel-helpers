@@ -124,7 +124,7 @@ export default function connnectToList(properties) {
       }
 
       destroy(item) {
-        this.props.dispatch(destroyItem(this.state.path, `${properties.api}`, item.id));
+        this.props.dispatch(destroyItem(properties.key, `${properties.api}`, item.id));
       }
 
       render() {
