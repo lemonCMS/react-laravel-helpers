@@ -50,7 +50,8 @@ export default class DataTable extends Component {
       orderCol: null,
       checked: {},
       current: {},
-      ids: {}
+      ids: {},
+      idsTouched: {}
     };
   }
 
@@ -89,18 +90,29 @@ export default class DataTable extends Component {
 
   check(event, key) {
     const checked = Object.assign(this.state.checked);
+    const idsTouched = Object.assign(this.state.idsTouched);
     const ids = Object.assign(this.state.ids);
     if (!ids[`box-${key}`]) {
       ids[`box-${key}`] = [];
     }
     _map(this.props.records, (record) => {
-      ids[`box-${key}`].splice(ids[`box-${key}`].indexOf(record.id, 1));
+      const index = ids[`box-${key}`].indexOf(record.id);
+      if (index > -1) {
+        ids[`box-${key}`].splice(index, 1);
+      }
+
       if (event.target.checked) {
         ids[`box-${key}`].push(record.id);
       }
+
+      const touched = idsTouched[`box-${key}`].indexOf(record.id);
+      if (touched === -1) {
+        idsTouched[`box-${key}`].push(record.id);
+      }
+
     });
     checked[`box-${key}`] = event.target.checked;
-    this.setState({ids: ids, checked: checked});
+    this.setState({ids, idsTouched, checked});
   }
 
   renderCols(cols) {
@@ -335,21 +347,55 @@ export default class DataTable extends Component {
       const click = (event) => {
         col.checkbox(event, record, this.props.dispatch);
         const ids = this.state.ids;
+        const idsTouched = this.state.idsTouched;
         if (!ids[`box-${key}`]) {
           ids[`box-${key}`] = [];
         }
-        ids[`box-${key}`].splice(ids[`box-${key}`].indexOf(record.id, 1));
+        if (!idsTouched[`box-${key}`]) {
+          idsTouched[`box-${key}`] = [];
+        }
+        const index = ids[`box-${key}`].indexOf(record.id);
+        if (index > -1) {
+          ids[`box-${key}`].splice(index, 1);
+        }
+
         if (event.target.checked) {
           ids[`box-${key}`].push(record.id);
         }
-        this.setState({ids: ids});
+
+        const touched = idsTouched[`box-${key}`].indexOf(record.id);
+        if (touched === -1) {
+          idsTouched[`box-${key}`].push(record.id);
+        }
+        this.setState({ids, idsTouched});
       };
+      const defaultChecked = _get(record, _get(col, 'show'), false);
+      const checked = () => {
+        const ids = this.state.ids;
+        const idsTouched = this.state.idsTouched;
+
+        if (!idsTouched[`box-${key}`] || !ids[`box-${key}`]) {
+          return defaultChecked;
+        }
+
+        const touched = idsTouched[`box-${key}`].indexOf(record.id);
+        if (touched === -1) {
+          return defaultChecked;
+        }
+
+        const checkedId = ids[`box-${key}`].indexOf(record.id);
+        if (checkedId > -1) {
+          return true;
+        }
+        return false;
+      };
+
       return (
         <input
           key={'checkbox' + record.id}
           type="checkbox"
           onChange={click}
-          defaultChecked={_get(record, _get(col, 'show'), false)}
+          checked={checked()}
         />
       );
     }
