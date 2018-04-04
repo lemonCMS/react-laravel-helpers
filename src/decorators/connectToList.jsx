@@ -19,9 +19,9 @@ import Pending from '../components/Pending';
 export default function connnectToList(properties) {
   return (WrappedComponent) => {
     @provideHooks({
-      fetch: ({store: {dispatch, getState}, params}) => {
+      fetch: ({store: {dispatch, getState}, params, location}) => {
         const promises = [];
-        const state = createAllParamsForFetch(getState());
+        const state = createAllParamsForFetch(getState(), location);
         const api = () => {
           if (_isFunction(properties.api)) {
             return properties.api(params);
