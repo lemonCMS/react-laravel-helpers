@@ -8,7 +8,7 @@ export function multiUpdate(key, path, params) {
     types: [constants.STORE_LIST_UPDATE, constants.STORE_LIST_UPDATE_SUCCESS, constants.STORE_LIST_UPDATE_FAIL],
     key,
     params,
-    promise: client => client.post(path, params)
+    promise: ({client}) => client.post(path, params)
   };
 }
 
