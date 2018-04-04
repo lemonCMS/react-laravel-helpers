@@ -95,6 +95,9 @@ export default class DataTable extends Component {
     if (!ids[`box-${key}`]) {
       ids[`box-${key}`] = [];
     }
+    if (!idsTouched[`box-${key}`]) {
+      idsTouched[`box-${key}`] = [];
+    }
     _map(this.props.records, (record) => {
       const index = ids[`box-${key}`].indexOf(record.id);
       if (index > -1) {
