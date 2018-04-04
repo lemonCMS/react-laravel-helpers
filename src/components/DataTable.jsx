@@ -150,7 +150,7 @@ export default class DataTable extends Component {
             key={key2}
             eventKey={key2}
             onSelect={() => {
-              button.action(this.state.ids);
+              button.action(this.state.ids, this.props.dispatch);
             }}>{button.name}</MenuItem>;
         });
       }
