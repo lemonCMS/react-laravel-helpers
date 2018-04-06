@@ -496,9 +496,13 @@ export default class DataTable extends Component {
         } else if (_has(col, 'filter') && col.filter === 'numeral') {
           cell.push(<span key="'show'">{numeral(Number(_get(record, col.show, 0))).format('$0.00')}</span>);
         } else if (_has(col, 'filter') && col.filter === 'date') {
-          cell.push(<span key="'show'">{moment(_get(record, col.show, '')).format('YYYY-MM-DD')}</span>);
+          cell.push(<span key="'show'">{moment(_get(record, col.show, '')).format(_get(col, 'format', 'YYYY-MM-DD'))}</span>);
         } else if (_has(col, 'filter') && col.filter === 'dateTime') {
-          cell.push(<span key="'show'">{moment(_get(record, col.show, '')).format('YYYY-MM-DD HH:mm')}</span>);
+          cell.push(<span key="'show'">{moment(_get(record, col.show, '')).format(_get(col, 'format', 'YYYY-MM-DD HH:mm'))}</span>);
+        } else if (_has(col, 'filter') && col.filter === 'unixDate') {
+          cell.push(<span key="'show'">{moment.unix(_get(record, col.show, '')).format(_get(col, 'format', 'YYYY-MM-DD'))}</span>);
+        } else if (_has(col, 'filter') && col.filter === 'unixDateTime') {
+          cell.push(<span key="'show'">{moment.unix(_get(record, col.show, '')).format(_get(col, 'format', 'YYYY-MM-DD HH:mm'))}</span>);
         } else {
           cell.push(<span key="'show'">{_get(record, col.show, '')}</span>);
         }
