@@ -432,7 +432,7 @@ export default class DataTable extends Component {
     } else if (_has(col, 'link') && _has(col, 'onClick')) {
       const click = (event) => {
         event.preventDefault();
-        col.onClick(record, this.props.auth, this.context.router);
+        col.onClick(record, this.context.router);
       };
       cell.push((
         <button
@@ -459,7 +459,7 @@ export default class DataTable extends Component {
           key={key2}
           className="btn btn-link"
           onClick={() => {
-            col.onClick(item);
+            col.onClick(item, this.context.router);
           }}>
           {show}
         </button>);
@@ -474,7 +474,7 @@ export default class DataTable extends Component {
       if (!_isEmpty(record, col.show, '')) {
         const click = (event) => {
           event.preventDefault();
-          col.onClick(record);
+          col.onClick(record, this.context.router);
         };
 
         cell.push(<button
@@ -534,7 +534,7 @@ export default class DataTable extends Component {
     return _map(buttons, (button, key) => {
       const click = () => {
         if (_has(button, 'onClick')) {
-          button.onClick(record);
+          button.onClick(record, this.context.router);
         }
       };
 
