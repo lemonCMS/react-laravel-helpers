@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 import _get from 'lodash/get';
 import _has from 'lodash/has';
 import _flatten from 'lodash/flatten';
+import _filter from 'lodash/filter';
 import _cloneDeep from 'lodash/cloneDeep';
 import _isFunction from 'lodash/isFunction';
 import {connect} from 'react-redux';
@@ -159,7 +160,7 @@ export default function connnectToList(properties) {
         }
 
         const rows = _cloneDeep(_has(properties, 'rows') ? properties.rows : [{cols: properties.cols}]);
-        rows[0].cols = _flatten([rows[0].cols, [dropDown]]);
+        rows[0].cols = _filter(_flatten([rows[0].cols, [dropDown]]));
 
         const getTable = () => {
           if (_get(this.props, ['data', 'success'], false) === true) {
