@@ -128,25 +128,34 @@ export default function connnectToList(properties) {
       }
 
       render() {
-        const dropDown = {
-          name: 'Acties',
-          dropdownButton: [
-            {name: 'bekijken', onClick: this.show},
-            {name: 'wijzigen', onClick: this.edit},
-          ]
-        };
+        const dropDown = {};
+        if (!properties.noDropDown) {
+          dropDown = {
+            name: 'Acties'
+          };
+          if (!properties.noEdit) {
+            dropDown.dropdownButton = [
+              {name: 'bekijken', onClick: this.show},
+              {name: 'wijzigen', onClick: this.edit},
+            ];
+          }
 
-        if (!properties.noDelete) {
-          dropDown.dropdownButton.push({divider: true});
-          dropDown.dropdownButton.push({
-            name: 'verwijderen',
-            onClick: (item) => {
-              this.setState({forceUpdate: true}, () => {
-                this.props.showModal(item, this.destroy);
-              });
-
+          if (!properties.noDelete) {
+            if (!dropDown.dropdownButton) {
+              dropDown.dropdownButton = [];
             }
-          });
+
+            dropDown.dropdownButton.push({divider: true});
+            dropDown.dropdownButton.push({
+              name: 'verwijderen',
+              onClick: (item) => {
+                this.setState({forceUpdate: true}, () => {
+                  this.props.showModal(item, this.destroy);
+                });
+
+              }
+            });
+          }
         }
 
         const rows = _cloneDeep(_has(properties, 'rows') ? properties.rows : [{cols: properties.cols}]);
