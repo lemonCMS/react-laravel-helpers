@@ -131,9 +131,8 @@ export default function connnectToList(properties) {
       render() {
         const dropDown = {};
         if (!properties.noDropDown) {
-          dropDown = {
-            name: 'Acties'
-          };
+          dropDown.name = 'Acties';
+
           if (!properties.noEdit) {
             dropDown.dropdownButton = [
               {name: 'bekijken', onClick: this.show},
@@ -160,7 +159,9 @@ export default function connnectToList(properties) {
         }
 
         const rows = _cloneDeep(_has(properties, 'rows') ? properties.rows : [{cols: properties.cols}]);
-        rows[0].cols = _compact(_flatten([rows[0].cols, [dropDown]]));
+        if (Object.keys(dropDown).length > 0) {
+          rows[0].cols = _compact(_flatten([rows[0].cols, [dropDown]]));
+        }
 
         const getTable = () => {
           if (_get(this.props, ['data', 'success'], false) === true) {
