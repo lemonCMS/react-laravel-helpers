@@ -309,6 +309,7 @@ export default function connectToFilter(rest) {
             alphabet={this.alphabet}
             pushSearch={this.pushSearch}
             pushStateAttempt={this.pushStateAttempt}
+            mergeState={this.mergeState}
             reset={this.reset}
           />
         );
