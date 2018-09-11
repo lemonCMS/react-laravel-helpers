@@ -245,7 +245,7 @@ export default function connectToFilter(rest) {
         return (
           <div className="panel panel-border-tb">
             <div className="panel-heading">
-              <h4 className="pnael-title">Alfabet</h4>
+              <h4 className="panel-title">Alfabet</h4>
             </div>
             <div className="panel-body">
               <div className="filter-color-container">
