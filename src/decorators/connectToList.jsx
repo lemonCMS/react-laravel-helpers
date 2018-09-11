@@ -105,7 +105,7 @@ export default function connnectToList(properties) {
             <div className="panel-heading">
               <Link to={`${properties.path}/new`} className="pull-right"><i className="fa fa-plus" /> nieuw item
                 aanmaken</Link>
-              <h4 className="pnael-title">Verfijn</h4>
+              <h4 className="panel-title">Verfijn</h4>
             </div>
             <div className="panel-body">
               <Search
