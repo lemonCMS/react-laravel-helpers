@@ -58,6 +58,7 @@ export default function connectToFilter(rest) {
         this.pushOnState = this.pushOnState.bind(this);
         this.pushStateAttempt = this.pushStateAttempt.bind(this);
         this.pushSearch = this.pushSearch.bind(this);
+        this.mergeState = this.mergeState.bind(this);
         this.clearTimer = this.clearTimer.bind(this);
         this.getParams = this.getParams.bind(this);
         this.toggleOnStack = this.toggleOnStack.bind(this);
