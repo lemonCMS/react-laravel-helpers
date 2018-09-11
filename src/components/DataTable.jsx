@@ -514,6 +514,24 @@ export default class DataTable extends Component {
       }
     }
 
+    if (_has(col, 'fa')) {
+      return (
+        <div className="btn-group" role="group" aria-label="Basic example">
+          {_map(col.fa, (item, itemKkey) => {
+            const click = () => {
+              if (_has(item, 'onClick')) {
+                const {paginator: {currPage}} = this.props;
+                item.onClick({record, currPage, router: this.context.router});
+              }
+            };
+            return (
+              <button className="btn btn-sm" onClick={click}>
+                <i key={itemKkey} className={`fa fa-${item.icon}`} />
+              </button>);
+          })}
+        </div>);
+    }
+
     if (_has(col, 'dropdownButton')) {
       const dropDownItems = this.renderDropDownItems(_get(col, 'dropdownButton'), record);
       cell.push(<DropdownButton
