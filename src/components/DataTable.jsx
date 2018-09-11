@@ -26,8 +26,7 @@ export default class DataTable extends Component {
     edit: PropTypes.func,
     pushOnState: PropTypes.func,
     dispatch: PropTypes.func,
-    inputOnStack: PropTypes.func,
-    auth: PropTypes.object
+    inputOnStack: PropTypes.func
   };
 
   static contextTypes = {

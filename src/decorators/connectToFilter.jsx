@@ -162,6 +162,11 @@ export default function connectToFilter(rest) {
         this.setState({form: state}, this.pushStateAttempt);
       }
 
+      mergeState(values) {
+        const state = Object.assign({}, this.state.form, values);
+        this.setState({form: state}, this.pushStateAttempt);
+      }
+
       pushOnState(key, value, clear = []) {
         const state = Object.assign({}, this.state.form);
         state[key] = value;
