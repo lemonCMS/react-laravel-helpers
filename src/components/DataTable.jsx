@@ -521,7 +521,7 @@ export default class DataTable extends Component {
             const click = () => {
               if (_has(item, 'onClick')) {
                 const {paginator: {currPage}} = this.props;
-                item.onClick({record, currPage, router: this.context.router});
+                item.onClick({record, currPage, router: this.context.router, dispatch: this.props.dispatch});
               }
             };
             return (
