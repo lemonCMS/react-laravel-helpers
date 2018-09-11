@@ -517,7 +517,7 @@ export default class DataTable extends Component {
     if (_has(col, 'fa')) {
       return (
         <div className="btn-group" role="group" aria-label="Basic example">
-          {_map(col.fa, (item, itemKkey) => {
+          {_map(col.fa, (item, itemKey) => {
             const click = () => {
               if (_has(item, 'onClick')) {
                 const {paginator: {currPage}} = this.props;
@@ -525,8 +525,8 @@ export default class DataTable extends Component {
               }
             };
             return (
-              <button className="btn btn-sm" onClick={click}>
-                <i key={itemKkey} className={`fa fa-${item.icon}`} />
+              <button key={itemKey} className="btn btn-sm" onClick={click}>
+                <i className={`fa fa-${item.icon}`} />
               </button>);
           })}
         </div>);
